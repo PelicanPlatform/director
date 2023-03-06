@@ -6,9 +6,9 @@ RUN yes | pip3 install flask flask_apscheduler requests tldextract maxminddb htc
 
 COPY src/* /app/
 
-EXPOSE 12000
+EXPOSE 8000
 
-#CMD ["python3", "/app/app.py"]
+CMD ["python3", "/app/app.py"]
 
 
 
