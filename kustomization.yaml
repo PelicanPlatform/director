@@ -2,5 +2,8 @@ apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
 resources:
 - deployment.yaml
+- maxmind-pvc.yaml
 - service.yaml
+- network.yaml
+- ingress.yaml
 - secret.yaml

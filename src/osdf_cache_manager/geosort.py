@@ -10,7 +10,7 @@ import socket
 import time
 import maxminddb
 
-gireader = maxminddb.open_database("/app/GeoLite2-City.mmdb")
+gireader = maxminddb.open_database("/app/maxminddb/GeoLite2-City.mmdb")
 
 proxygirs = {}
 lookup_ttl = 60*5       # 5 minutes

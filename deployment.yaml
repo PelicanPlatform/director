@@ -15,6 +15,9 @@ spec:
       containers:
       - name: osdf-manager-app
         image: jhiemstra/osdf-flask-app
+        volumeMounts:
+          - name: maxmind-volume
+            mountPath: /app/maxminddb
         ports:
         - containerPort: 8000
         env:
@@ -28,3 +31,8 @@ spec:
             secretKeyRef:
               name: condor-scitoken
               key: CondorToken
+      volumes:
+        - name: maxmind-volume
+          persistentVolumeClaim:
+            claimName: maxmind-pvc
+      
