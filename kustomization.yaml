@@ -6,4 +6,5 @@ resources:
 - service.yaml
 - network.yaml
 - ingress.yaml
-- secret.yaml
+- condor-token-secret.yaml
+- maxmind-secret.yaml

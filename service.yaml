@@ -7,6 +7,6 @@ spec:
     app: osdf-manager-app
   ports:
   - name: http
-    port: 8000
+    port: 8080
     targetPort: 8000
   type: NodePort

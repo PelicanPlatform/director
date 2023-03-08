@@ -16,6 +16,6 @@ spec:
           app: "traefik"
     ports:
     - protocol: TCP
-      port: 8000 
+      port: 8080 
   egress:
     - {}

@@ -3,9 +3,10 @@ kind: PersistentVolumeClaim
 metadata:
   name: maxmind-pvc
 spec:
+  storageClassName: 3x-replica-block
   accessModes:
     - ReadWriteOnce
   resources:
     requests:
-      storage: 150Mi
+      storage: 170Mi
 
