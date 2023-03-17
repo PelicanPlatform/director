@@ -4,11 +4,7 @@ import tarfile
 import shutil
 from os.path import exists
 
-
-
-
 def update_db(update=False):
-
 
     db_exists = exists("/app/maxminddb/GeoLite2-City.mmdb")
     if (update or not db_exists):
@@ -39,5 +35,3 @@ def update_db(update=False):
         shutil.rmtree(os.path.join("/app/maxminddb", common_prefix)) 
         print("Deleting tarfile")
         os.remove("/app/maxminddb/GeoLite2-City.tar.gz")
-
-

@@ -19,4 +19,3 @@ def get_namespaces(namespace_ads):
         if namespace_ad["Path"] not in namespaces:
             namespaces.append(namespace_ad["Path"])
     return namespaces
-    

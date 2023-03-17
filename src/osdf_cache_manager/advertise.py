@@ -25,4 +25,3 @@ def advertise_to_coll(topo_data_src, collector):
                 collector.advertise(namespace_class_ads_list)
             except Exception as exc:
                 print("Exception occurred while trying to advertise namespace class ads to the collector: {}".format(exc))
-
