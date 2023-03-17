@@ -16,7 +16,7 @@ RUN echo "conda activate base" >> ~/.bashrc
 
 # Install necessary Python packages
 RUN conda install -y flask requests tldextract && \
-    conda install -y -c conda-forge maxminddb python-htcondor flask-apscheduler
+    conda install -y -c conda-forge maxminddb python-htcondor flask-apscheduler waitress
 
 # Set up dirs needed by app
 COPY src/osdf_cache_manager/ /app/
