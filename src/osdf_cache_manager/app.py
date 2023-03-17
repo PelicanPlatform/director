@@ -1,81 +1,87 @@
 import htcondor
 import os
+import tarfile
 
 from flask import Flask
 from flask_apscheduler import APScheduler
-from views import views
 from get_ads import get_cache_ads_from_namespace
 from topology_parser import *
 from classads import get_namespace_ads, get_cache_ads, get_namespaces
 from advertise import advertise_to_coll
+from update_db import update_db
 import requests
 
 #############################
 # Globals
 #############################
 # Set up collector
+htcondor.param['TOOL_DEBUG'] = 'D_SECURITY:2'
+htcondor.param['TOOL_LOG'] = '/home/debug-log'
+htcondor.enable_debug()
+htcondor.enable_log()
 collector = htcondor.Collector("osdf-collector.osgdev.chtc.io:9618")
-
-# Get MaxMind License Key from env var or file
-if 'MAXMIND_LICENSE_KEY' in os.environ:
-        license_key = os.environ['MAXMIND_LICENSE_KEY']
-    elif 'MAXMIND_LICENSE_KEY_FILE' in os.environ:
-        with open(os.environ['MAXMIND_LICENSE_KEY_FILE']) as fp:
-            license_key = fp.read()
-
-# Create MaxMindDB Update URL
-maxminddb_URL = "https://download.maxmind.com/app/geoip_download?edition_id=GeoLite2-City&license_key={}&suffix=tar.gz".format(license_key)
 
 # Data source used to create classads
 topology_data_src = "https://topology.opensciencegrid.org/osdf/namespaces"
 
 
 #############################
-# Flask app & scheduler setup
-#############################
-app = Flask(__name__)
-app.register_blueprint(views, url_prefix="/")
-
-scheduler = APScheduler()
-scheduler.init_app(app)
-
-
-#############################
 # Initializations
 #############################
+# Get the geosort database
+update_db()
+
 # Create classads and advertise
+print("Performing initial advertisements to collector...")
 advertise_to_coll(topology_data_src, collector)
+print("Done")
 
 # Store the ads in memory
 namespace_ads = get_namespace_ads(collector)
 cache_ads = get_cache_ads(collector)
 namespaces = get_namespaces(namespace_ads)
 
-# Get the geosort database
-with open ("/app/maxminddb/GeoLite2-City.mmdb", 'wb') as f:
-    f.write(requests.get(maxminddb_URL).content)
+#############################
+# Flask app & scheduler setup
+#############################
+def create_app():
+    app = Flask(__name__)
+    with app.app_context():
+        from views import views
+        app.register_blueprint(views, url_prefix="/")
+    return app
+
+app = create_app()
+scheduler = APScheduler()
+scheduler.init_app(app)
 
 
 #############################
 # Schedule Jobs
 #############################
 @scheduler.task('cron', id='advertise_topo_classads', minute='*/10')
-def advertise_topo_classads():    
+def advertise_topo_classads():
+    print("advertising to collector...") 
     advertise_to_coll(topology_data_src, collector)
+    print("advertising done")
     
 @scheduler.task('cron', id='generate_classads_list', minute='*/10')
 def generate_classads_list():
     global namespace_ads
+    print("Performing scheduled namespace ad generation...")
     namespace_ads = get_namespace_ads(collector)
+    print("Done")
     global cache_ads
+    print("Performing scheduled cache ad generation...")
     cache_ads = get_cache_ads(collector)
+    print("Done")
     
 # Update local maxmind db every Tue and Thurs at 23:00. Upstream is updated every Tue/Thurs earlier in the day
 @scheduler.task('cron', id='get_maxmind_db', day_of_week='tue,thu', hour='23')
 def update_local_maxminddb():
-    with open ("/app/GeoLite2-City.mmdb", 'wb') as f:
-        f.write(requests.get(maxminddb_URL).content)
-
+    print("Performing scheduled maxmind db update...")
+    update_db(True)
+    print("Done")
 
 #############################
 # Start the scheduler and run
@@ -83,5 +89,4 @@ def update_local_maxminddb():
 #############################
 scheduler.start()
 if __name__ == '__main__':
-    app.run(host="localhost", port=8000)
-
+    app.run(host='0.0.0.0', debug=True, port=8443)

@@ -10,7 +10,8 @@ views = Blueprint(__name__, "views")
 from app import namespace_ads, cache_ads, namespaces
 @views.route("<path:path>", methods=["GET","HEAD","PROPFIND", "PUT"])
 def redirect_to_cache(path):
-    ip_addr = request.remote_addr
+    # Get the client IP
+    ip_addr = request.headers.get('X-Real-Ip')
 
     # Parse the path and requested file
     path = "/"+path
@@ -40,8 +41,8 @@ def redirect_to_cache(path):
 
         # Make Link header persuant to Metalink/HTTP RFC to provide ordered list of other caches
         link_header = ""
-        priority_counter = 1
-        for cache in cache_list[1:]:
+        priority_counter = 0
+        for cache in cache_list:
             priority_counter +=1
             if priority_counter == len(cache_list):
                 link_header += "<{}>; rel=\"duplicate\"; pri={} ".format(cache["ContactURL"], priority_counter)

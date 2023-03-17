@@ -57,7 +57,7 @@ def distance_on_unit_sphere(lat1, long1, lat2, long2):
 
 
 def sort_proxies(rem_addr, proxies):
-
+    
     gir_rem = getgeoiprecord(rem_addr)
     if gir_rem is None:
         return [[], 'remote addr not found in database']
@@ -69,13 +69,6 @@ def sort_proxies(rem_addr, proxies):
     onegood = False
     now = int(time.time())
     for proxy in proxies:
-        # colon = proxy.find(':')
-        # if colon == -1:
-        #     name = proxy
-        #     proxy += ':3128'
-        # else:
-        #     name = proxy[0:colon]
-
         colon = proxy["ContactURL"].find(':')
         name = proxy["ContactURL"][0:colon]
         port = proxy["ContactURL"][colon:]
@@ -87,7 +80,7 @@ def sort_proxies(rem_addr, proxies):
                 ai = socket.getaddrinfo(name,80,0,0,socket.IPPROTO_TCP)
             except:
                 pass
-
+          
             # Try IPv4 first since that geo info is currently more reliable,
             #     and most machines today are dual stack if they have IPv6
             gir_proxy = None
