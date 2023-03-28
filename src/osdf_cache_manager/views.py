@@ -13,6 +13,9 @@ def redirect_to_cache(path):
     # Get the client IP
     ip_addr = request.headers.get('X-Real-Ip')
 
+    # Get the token for auth
+    auth_token = request.headers.get('Authorization')
+
     # Parse the path and requested file
     path = "/"+path
     namespace = ""
@@ -49,6 +52,8 @@ def redirect_to_cache(path):
             else:
                 link_header += "<{}>; rel=\"duplicate\"; pri={}, ".format(cache["ContactURL"], priority_counter)
         response.headers['Link'] = link_header
+        if authenticated:
+            response.headers['Authorization'] = auth_token
         return response
 
     else:
