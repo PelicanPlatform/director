@@ -31,4 +31,4 @@ jobs:
         context: .
         dockerfile: ./Dockerfile
         push: true
-        tags: hub.opensciencegrid.org/${{ env.DOCKER_IMAGE_NAME }}:latest
+        tags: hub.opensciencegrid.org/osdf-cache-man/${{ env.DOCKER_IMAGE_NAME }}:latest
