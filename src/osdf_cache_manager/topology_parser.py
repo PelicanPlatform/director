@@ -27,6 +27,8 @@ def cache_class_ad_from_topo(cache):
 def namespace_class_ad_from_topo(namespace, cache):
     class_ad_dict = {"MyType":"OSDFNamespace", "ServerName":cache["resource"], "Path":namespace["path"], "Authentication":namespace["readhttps"],"Operations":None}
     
+    # Set up supported authorizations
+    # THIS SECTION NEEDS REVIEW, IS PROBABLY WRONG
     operations_str = "GET,HEAD,PROPFIND"
     if namespace["writebackhost"] != None:
         writebackhost_domain = tldextract.extract(namespace["writebackhost"]).domain
@@ -37,5 +39,14 @@ def namespace_class_ad_from_topo(namespace, cache):
     class_ad_dict["Operations"] = operations_str
     name = namespace["path"] + ":" + cache["resource"]
     class_ad_dict["Name"] = name
+
+    # Determine which credential generation fields to create
+    if namespace["credential_generation"] != None: # A method for providing credentials is present
+        class_ad_dict["strategy"] = namespace["credential_generation"]["strategy"]
+        class_ad_dict["issuer"] = namespace["credential_generation"]["issuer"]
+         class_ad_dict["max_scope_depth"] = namespace["credential_generation"]["max_scope_depth"]
+        if namespace["credential_generation"]["strategy"] == "Vault":
+            class_ad_dict["vault_server"] = namespace["credential_generation"]["vault_server"]
+
     ad_from_dict = classad.ClassAd(class_ad_dict)
     return ad_from_dict
