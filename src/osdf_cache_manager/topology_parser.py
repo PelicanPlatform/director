@@ -30,7 +30,7 @@ def namespace_class_ad_from_topo(namespace, cache):
     # Set up supported authorizations
     # THIS SECTION NEEDS REVIEW, IS PROBABLY WRONG
     operations_str = "GET,HEAD,PROPFIND"
-    if namespace["writebackhost"] != None:
+    if namespace["writebackhost"] is not None:
         writebackhost_domain = tldextract.extract(namespace["writebackhost"]).domain
         cache_domain = tldextract.extract(cache["endpoint"]).domain
         if cache_domain == writebackhost_domain:
@@ -41,12 +41,12 @@ def namespace_class_ad_from_topo(namespace, cache):
     class_ad_dict["Name"] = name
 
     # Determine which credential generation fields to create
-    if namespace["credential_generation"] != None: # A method for providing credentials is present
-        class_ad_dict["strategy"] = namespace["credential_generation"]["strategy"]
-        class_ad_dict["issuer"] = namespace["credential_generation"]["issuer"]
-         class_ad_dict["max_scope_depth"] = namespace["credential_generation"]["max_scope_depth"]
+    if namespace["credential_generation"] is not None: # A method for providing credentials is present
+        class_ad_dict["Strategy"] = namespace["credential_generation"]["strategy"]
+        class_ad_dict["Issuer"] = namespace["credential_generation"]["issuer"]
+        class_ad_dict["MaxScopeDepth"] = namespace["credential_generation"]["max_scope_depth"]
         if namespace["credential_generation"]["strategy"] == "Vault":
-            class_ad_dict["vault_server"] = namespace["credential_generation"]["vault_server"]
+            class_ad_dict["VaultServer"] = namespace["credential_generation"]["vault_server"]
 
     ad_from_dict = classad.ClassAd(class_ad_dict)
     return ad_from_dict

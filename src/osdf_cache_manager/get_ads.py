@@ -16,3 +16,7 @@ def get_cache_ads_from_namespace(all_namespace_ads, all_cache_ads, namespace, op
     
     authenticated = namespace_ads[0]["Authentication"]
     return [cache_ads, authenticated]
+
+def get_namespace_ad(namespace, all_namespace_ads):
+    namespace_ad = [ad for ad in all_namespace_ads if ad["Path"]==namespace]
+    return namespace_ad[0]

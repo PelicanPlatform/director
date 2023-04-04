@@ -1,6 +1,6 @@
 FROM almalinux:8
 
-RUN dnf install -y wget bzip2 ca-certificates curl procps
+RUN dnf install -y wget bzip2 ca-certificates curl procps nano
 
 # Download and install Miniconda
 RUN wget -q https://repo.anaconda.com/miniconda/Miniconda3-py39_23.1.0-1-Linux-x86_64.sh -O ~/miniconda.sh && \
