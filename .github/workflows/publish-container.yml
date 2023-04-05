@@ -3,10 +3,10 @@ name: Build and push Docker image
 on:
   push:
     branches:
-      - main
+      - dev
   pull_request:
     branches:
-      - main
+      - dev
   schedule:
     - cron: '0 7 * * *'
 
@@ -34,4 +34,4 @@ jobs:
         context: .
         dockerfile: ./Dockerfile
         push: true
-        tags: hub.opensciencegrid.org/opensciencegrid/${{ env.DOCKER_IMAGE_NAME }}:latest
+        tags: hub.opensciencegrid.org/opensciencegrid/${{ env.DOCKER_IMAGE_NAME }}:latest.dev
