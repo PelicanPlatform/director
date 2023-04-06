@@ -88,7 +88,7 @@ jobs:
           for registry in hub.opensciencegrid.org; do
           #         "latest${ITB_SUFFIX}"
             for image_tag in "${GITHUB_TAG}" "$(git rev-parse HEAD)"; do
-              tag_list+=("$registry"/opensciencegrid/osdf-cache-director:"$image_tag")
+              tag_list+=("$registry"/opensciencegrid/"${{ env.DOCKER_IMAGE_NAME }}"":"$image_tag")
             done
           done
           # This causes the tag_list array to be comma-separated below,

@@ -29,5 +29,5 @@ ENV CONDOR_CONFIG=/etc/condor/config.d/00-local.conf
 
 EXPOSE 8443
 
-CMD ["sleep", "infinity"]
-#CMD ["python3", "/app/app.py"]
+#CMD ["sleep", "infinity"]
+CMD ["python3", "/app/app.py"]
