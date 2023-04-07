@@ -14,7 +14,7 @@ import requests
 #############################
 # Globals
 #############################
-# Set up collector
+# Set up collector + debugging
 htcondor.param['TOOL_DEBUG'] = 'D_SECURITY:2'
 htcondor.param['TOOL_LOG'] = '/home/debug-log'
 htcondor.enable_debug()
@@ -29,7 +29,7 @@ topology_data_src = "https://topology.opensciencegrid.org/osdf/namespaces"
 # Initializations
 #############################
 # Get the geosort database
-update_db()
+update_db() # Won't update if the database is already there. Use True as an argument to override
 
 # Create classads and advertise
 print("Performing initial advertisements to collector...")
@@ -41,53 +41,65 @@ namespace_ads = get_namespace_ads(collector)
 cache_ads = get_cache_ads(collector)
 namespaces = get_namespaces(namespace_ads)
 
-#############################
-# Flask app & scheduler setup
-#############################
-def create_app():
-    app = Flask(__name__)
-    with app.app_context():
-        from views import views
-        app.register_blueprint(views, url_prefix="/")
-    return app
-
-app = create_app()
-scheduler = APScheduler()
-scheduler.init_app(app)
-
 
 #############################
-# Schedule Jobs
-#############################
-@scheduler.task('cron', id='advertise_topo_classads', minute='*/10')
-def advertise_topo_classads():
-    print("advertising to collector...") 
-    advertise_to_coll(topology_data_src, collector)
-    print("advertising done")
-    
-@scheduler.task('cron', id='generate_classads_list', minute='*/10')
-def generate_classads_list():
-    global namespace_ads
-    print("Performing scheduled namespace ad generation...")
-    namespace_ads = get_namespace_ads(collector)
-    print("Done")
-    global cache_ads
-    print("Performing scheduled cache ad generation...")
-    cache_ads = get_cache_ads(collector)
-    print("Done")
-    
-# Update local maxmind db every Tue and Thurs at 23:00. Upstream is updated every Tue/Thurs earlier in the day
-@scheduler.task('cron', id='get_maxmind_db', day_of_week='tue,thu', hour='23')
-def update_local_maxminddb():
-    print("Performing scheduled maxmind db update...")
-    update_db(True)
-    print("Done")
-
-#############################
-# Start the scheduler and run
+# Set up/start the scheduler and run
 # the app
 #############################
-scheduler.start()
+
 if __name__ == '__main__':
     from waitress import serve
+
+    #############################
+    # Flask app
+    #############################
+    def create_app():
+        app = Flask(__name__)
+        with app.app_context():
+            from views import views
+            app.register_blueprint(views, url_prefix="/")
+        return app
+
+    app = create_app()
+
+    #############################
+    # Set up the scheduler
+    #############################
+    scheduler = APScheduler()
+    scheduler.max_instances = 1
+    scheduler.init_app(app)
+
+    #############################
+    # Schedule Jobs
+    #############################
+    @scheduler.task('cron', id='advertise_topo_classads', minute='*/1')
+    def advertise_topo_classads():
+        print("advertising to collector...") 
+        advertise_to_coll(topology_data_src, collector)
+        print("advertising done")
+        
+    @scheduler.task('cron', id='generate_classads_list', minute='*/1')
+    def generate_classads_list():
+        global namespace_ads
+        print("Performing scheduled namespace ad generation...")
+        namespace_ads = get_namespace_ads(collector)
+        print("Done")
+        global cache_ads
+        print("Performing scheduled cache ad generation...")
+        cache_ads = get_cache_ads(collector)
+        print("Done")
+        
+    # Update local maxmind db every Tue and Thurs at 23:00. Upstream is updated every Tue/Thurs earlier in the day
+    @scheduler.task('cron', id='get_maxmind_db', day_of_week='tue,thu', hour='23')
+    def update_local_maxminddb():
+        print("Performing scheduled maxmind db update...")
+        update_db(True) # True tells update_db that it should pull the database and update.
+        print("Done")
+
+    scheduler.start()
+
+    #############################
+    # Dinner is served!
+    #############################
     serve(app, host='0.0.0.0', port=8443)
+    #app.run(host='0.0.0.0', port=8443, debug=True) # For debugging, not a production server
