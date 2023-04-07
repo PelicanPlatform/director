@@ -5,9 +5,7 @@ from get_ads import get_cache_ads_from_namespace, get_namespace_ad
 from geosort import sort_proxies
 
 views = Blueprint(__name__, "views")
-
-
-from app import namespace_ads, cache_ads, namespaces
+from app import namespace_ads, cache_ads, namespaces # Careful, playing with something close to a circular dependency here... app.py also imports views 
 @views.route("<path:path>", methods=["GET","HEAD","PROPFIND", "PUT"])
 def redirect_to_cache(path):
     # Get the client IP
@@ -50,23 +48,21 @@ def redirect_to_cache(path):
             else:
                 link_header += "<{}>; rel=\"duplicate\"; pri={}, ".format(cache["ContactURL"], priority_counter)
         response.headers['Link'] = link_header
-        
-
-        namespace_ad = get_namespace_ad(namespace, namespace_ads)
 
         # Get the token for auth
         auth_token = None
         if request.headers.get("Authorization"):
             auth_token = request.headers.get("Authorization")
 
-        print(namespace_ad)
-
         # Create the X-OSDF-Authorization header
+        namespace_ad = get_namespace_ad(namespace, namespace_ads)
         X_OSDF_Authorization_hdr = ""
         if "Issuer" in namespace_ad: # If there is an issuer, then other fields will also be present
             X_OSDF_Authorization_hdr = "Issuer={}".format(namespace_ad["Issuer"])
             if "BasePath" in namespace_ad:
                 X_OSDF_Authorization_hdr += ", Base-Path={}".format(namespace_ad["BasePath"])
+            else:
+                X_OSDF_Authorization_hdr += ", Base-Path={}".format(namespace_ad["Path"])
             if auth_token:
                 X_OSDF_Authorization_hdr += ", Authorization={}".format(auth_token)
         response.headers["X-OSDF-Authorizaton"] = X_OSDF_Authorization_hdr
@@ -79,8 +75,11 @@ def redirect_to_cache(path):
                 X_OSDF_Token_Generation_hdr += ", Vault-Server={}".format(namespace_ad["VaultServer"])
         response.headers["X-OSDF-Token-Generation"] = X_OSDF_Token_Generation_hdr
 
+        # Headers are all set up, send them back
         return response
-
     else:
         # Indicate error
         return 'Bad namespace, or failure to advertise to collector!', 404
+
+
+
