@@ -25,7 +25,8 @@ def cache_class_ad_from_topo(cache):
     return ad_from_dict
 
 def namespace_class_ad_from_topo(namespace, cache):
-    class_ad_dict = {"MyType":"OSDFNamespace", "ServerName":cache["resource"], "Path":namespace["path"], "Authentication":namespace["readhttps"],"Operations":None}
+    authenticated = namespace["readhttps"] or namespace["usetokenonread"]
+    class_ad_dict = {"MyType":"OSDFNamespace", "ServerName":cache["resource"], "Path":namespace["path"], "Authentication":authenticated,"Operations":None}
     
     # Set up supported authorizations
     # THIS SECTION NEEDS REVIEW, IS PROBABLY WRONG

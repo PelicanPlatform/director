@@ -44,9 +44,15 @@ def redirect_to_cache(path):
         for cache in cache_list:
             priority_counter +=1
             if priority_counter == len(cache_list):
-                link_header += "<{}>; rel=\"duplicate\"; pri={} ".format(cache["ContactURL"], priority_counter)
+                if authenticated:
+                    link_header += "<{}>; rel=\"duplicate\"; pri={} ".format(cache["AuthContactURL"], priority_counter)
+                else:
+                    link_header += "<{}>; rel=\"duplicate\"; pri={} ".format(cache["ContactURL"], priority_counter)
             else:
-                link_header += "<{}>; rel=\"duplicate\"; pri={}, ".format(cache["ContactURL"], priority_counter)
+                if authenticated:
+                    link_header += "<{}>; rel=\"duplicate\"; pri={}, ".format(cache["AuthContactURL"], priority_counter)
+                else:
+                    link_header += "<{}>; rel=\"duplicate\"; pri={}, ".format(cache["ContactURL"], priority_counter)
         response.headers['Link'] = link_header
 
         # Get the token for auth

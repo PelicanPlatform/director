@@ -19,7 +19,7 @@ htcondor.param['TOOL_DEBUG'] = 'D_SECURITY:2'
 htcondor.param['TOOL_LOG'] = '/home/debug-log'
 htcondor.enable_debug()
 htcondor.enable_log()
-collector = htcondor.Collector("osdf-collector.osgdev.chtc.io:9618")
+collector = htcondor.Collector() # The collector to be used should exist as an env var "_condor_COLLECTOR_HOST"
 
 # Data source used to create classads
 topology_data_src = "https://topology.opensciencegrid.org/osdf/namespaces"
@@ -101,5 +101,5 @@ if __name__ == '__main__':
     #############################
     # Dinner is served!
     #############################
-    serve(app, host='0.0.0.0', port=8443)
+    serve(app, host='0.0.0.0', port=8443) # use for prod
     #app.run(host='0.0.0.0', port=8443, debug=True) # For debugging, not a production server
