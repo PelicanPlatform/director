@@ -64,22 +64,25 @@ def redirect_to_cache(path):
         namespace_ad = get_namespace_ad(namespace, namespace_ads)
         X_OSDF_Authorization_hdr = ""
         if "Issuer" in namespace_ad: # If there is an issuer, then other fields will also be present
-            X_OSDF_Authorization_hdr = "Issuer={}".format(namespace_ad["Issuer"])
+            X_OSDF_Authorization_hdr = "issuer={}".format(namespace_ad["Issuer"])
             if "BasePath" in namespace_ad:
-                X_OSDF_Authorization_hdr += ", Base-Path={}".format(namespace_ad["BasePath"])
+                X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["BasePath"])
             else:
-                X_OSDF_Authorization_hdr += ", Base-Path={}".format(namespace_ad["Path"])
+                X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["Path"])
             if auth_token:
-                X_OSDF_Authorization_hdr += ", Authorization={}".format(auth_token)
+                X_OSDF_Authorization_hdr += ", authorization={}".format(auth_token)
         response.headers["X-OSDF-Authorizaton"] = X_OSDF_Authorization_hdr
 
         # Create the X-OSDF-Token-Generation header
         X_OSDF_Token_Generation_hdr = ""
         if "Issuer" in namespace_ad: # If there is an issuer, then other fields will also be present  
-            X_OSDF_Token_Generation_hdr = "Issuer={}, Max-Scope-Depth={}, Strategy={}".format(namespace_ad["Issuer"], namespace_ad["MaxScopeDepth"], namespace_ad["Strategy"])
+            X_OSDF_Token_Generation_hdr = "issuer={}, max-scope-depth={}, strategy={}".format(namespace_ad["Issuer"], namespace_ad["MaxScopeDepth"], namespace_ad["Strategy"])
             if "VaultServer" in namespace_ad:
-                X_OSDF_Token_Generation_hdr += ", Vault-Server={}".format(namespace_ad["VaultServer"])
+                X_OSDF_Token_Generation_hdr += ", vault-server={}".format(namespace_ad["VaultServer"])
         response.headers["X-OSDF-Token-Generation"] = X_OSDF_Token_Generation_hdr
+
+
+        response.headers["X-OSDF-Namespace"] = "namespace={}, readhttps={}, use-token-on-read={}".format(namespace, namespace_ad["ReadHTTPS"], namespace_ad["UseTokenOnRead"])
 
         # Headers are all set up, send them back
         return response
