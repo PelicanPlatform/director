@@ -72,13 +72,13 @@ if __name__ == '__main__':
     #############################
     # Schedule Jobs
     #############################
-    @scheduler.task('cron', id='advertise_topo_classads', minute='*/1')
+    @scheduler.task('cron', id='advertise_topo_classads', minute='*/10')
     def advertise_topo_classads():
         print("advertising to collector...") 
         advertise_to_coll(topology_data_src, collector)
         print("advertising done")
         
-    @scheduler.task('cron', id='generate_classads_list', minute='*/1')
+    @scheduler.task('cron', id='generate_classads_list', minute='*/10')
     def generate_classads_list():
         global namespace_ads
         print("Performing scheduled namespace ad generation...")
@@ -103,3 +103,6 @@ if __name__ == '__main__':
     #############################
     serve(app, host='0.0.0.0', port=8443) # use for prod
     #app.run(host='0.0.0.0', port=8443, debug=True) # For debugging, not a production server
+    # Note that when run in debug mode, Flask will create duplicate instances of the app,
+    # which will result in scheduled tasks being run twice. This isn't an issue for debugging,
+    # but it's something to be aware of.
