@@ -15,7 +15,7 @@ RUN conda init bash
 RUN echo "conda activate base" >> ~/.bashrc
 
 # Install necessary Python packages
-RUN conda install -y flask requests tldextract && \
+RUN conda install -y flask requests tldextract flask-cors && \
     conda install -y -c conda-forge maxminddb python-htcondor flask-apscheduler waitress
 
 # Set up dirs needed by app
