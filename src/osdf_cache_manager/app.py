@@ -1,6 +1,7 @@
 import htcondor
 import os
 import tarfile
+from flask_cors import CORS
 
 from flask import Flask
 from flask_apscheduler import APScheduler
@@ -61,6 +62,11 @@ if __name__ == '__main__':
         return app
 
     app = create_app()
+
+    #############################
+    # Enable CORS on all endpoints
+    #############################
+    CORS(app)
 
     #############################
     # Set up the scheduler
