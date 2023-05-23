@@ -71,7 +71,7 @@ def redirect_to_cache(path):
                 X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["Path"])
             if auth_token:
                 X_OSDF_Authorization_hdr += ", authorization={}".format(auth_token)
-        response.headers["X-OSDF-Authorizaton"] = X_OSDF_Authorization_hdr
+        response.headers["X-OSDF-Authorization"] = X_OSDF_Authorization_hdr
 
         # Create the X-OSDF-Token-Generation header
         X_OSDF_Token_Generation_hdr = ""
