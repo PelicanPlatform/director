@@ -43,6 +43,11 @@ on:
   push:
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
+  pull_request:
+    branches: 
+      - master
+  schedule:
+    - cron: '0 7 * * *'
 
 env:
   DOCKER_IMAGE_NAME: osdf-cache-director
@@ -51,7 +56,7 @@ jobs:
 
   build:
     runs-on: ubuntu-latest
-    if: startsWith(github.repository, 'osg-htc/')
+    if: startsWith(github.repository, 'PelicanPlatform/')
 
     steps:
       - uses: actions/checkout@v2
@@ -75,15 +80,7 @@ jobs:
           echo $(git rev-parse HEAD)
           
           echo $GITHUB_TAG
-          
-          # # If this is a itb release lets tag it as such
-          # if [[ $GITHUB_TAG == *"itb"* ]]; 
-          # then
-          #   ITB_SUFFIX="-itb"
-          # else
-          #   ITB_SUFFIX=""
-          # fi
-          
+    
           tag_list=()
           for registry in hub.opensciencegrid.org; do
           #         "latest${ITB_SUFFIX}"
