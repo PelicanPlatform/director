@@ -120,9 +120,10 @@ on:
   schedule:
     - cron: '0 7 * * *'
   push:
-    branches: main
     tags:
       - v[0-9]+.[0-9]+.[0-9]+
+    branches:
+      - main
   repository_dispatch:
     types:
       - dispatch-build
@@ -169,7 +170,7 @@ jobs:
         docker_repo="pelican_platform/director"
         tag_list=()
         for registry in hub.opensciencegrid.org; do
-          for image_tag in "$GITHUB_TAG" "$GITHUB_TAG-$TIMESTAMP"; do
+          for image_tag in "$GITHUB_TAG" "$GITHUB_TAG-$TIMESTAMP" "$(git rev-parse HEAD)"; do
             tag_list+=("$registry/$docker_repo":"$image_tag")
           done
         done
@@ -193,5 +194,4 @@ jobs:
       with:
         context: .
         push: true
-        build-args: BASE_YUM_REPO=${{ matrix.repo }}
         tags: "${{ steps.generate-tag-list.outputs.taglist }}"
