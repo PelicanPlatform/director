@@ -120,7 +120,6 @@ on:
   schedule:
     - cron: '0 7 * * *'
   push:
-    #branches: [ $default-branch ]
     branches: main
   repository_dispatch:
     types:
@@ -142,21 +141,33 @@ jobs:
     needs: [make-date-tag]
     strategy:
       fail-fast: False
-      matrix:
-        repo: ['development', 'testing', 'release']
     steps:
     - uses: actions/checkout@v2
 
     - name: Generate tag list
       id: generate-tag-list
       env:
-        REPO: ${{ matrix.repo }}
         TIMESTAMP: ${{ needs.make-date-tag.outputs.dtag }}
       run: |
-        docker_repo=pelican_platform/director
+        if [ -z "${{ inputs.tag  }}" ]
+        then 
+          GITHUB_TAG=${GITHUB_REF##*/}
+        else
+          GITHUB_TAG=${{ inputs.tag }}
+        fi
+        
+        echo "Master SHA:"
+        echo $(git rev-parse $GITHUB_REF_NAME)
+        
+        echo "Current SHA:"
+        echo $(git rev-parse HEAD)
+        
+        echo $GITHUB_TAG
+        
+        docker_repo="pelican_platform/director"
         tag_list=()
         for registry in hub.opensciencegrid.org; do
-          for image_tag in "$REPO" "$REPO-$TIMESTAMP"; do
+          for image_tag in "$GITHUB_TAG" "$GITHUB_TAG-$TIMESTAMP"; do
             tag_list+=("$registry/$docker_repo":"$image_tag")
           done
         done
