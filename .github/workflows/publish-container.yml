@@ -8,6 +8,7 @@ on:
       - v[0-9]+.[0-9]+.[0-9]+
     branches:
       - main
+      - dev
   repository_dispatch:
     types:
       - dispatch-build
@@ -43,7 +44,11 @@ jobs:
           then
             GITHUB_TAG=${GITHUB_REF##*/}
           else
-            GITHUB_TAG="latest"
+            if [[ "${{ github.ref }}" == "refs/heads/dev" ]]; then
+              GITHUB_TAG="dev-latest"
+            else
+              GITHUB_TAG="latest"
+            fi
           fi
         else
           GITHUB_TAG=${{ inputs.tag }}
@@ -60,7 +65,7 @@ jobs:
         docker_repo="pelican_platform/director"
         tag_list=()
         for registry in hub.opensciencegrid.org; do
-          if [ "$GITHUB_TAG" = "latest" ]
+          if [ "$GITHUB_TAG" = "latest" ] || [ "$GITHUB_TAG" = "dev-latest" ]
           then
             for image_tag in "$GITHUB_TAG" "$TIMESTAMP"; do
               tag_list+=("$registry/$docker_repo":"$image_tag")
