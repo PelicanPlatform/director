@@ -170,13 +170,13 @@ jobs:
         docker_repo="pelican_platform/director"
         tag_list=()
         for registry in hub.opensciencegrid.org; do
-          if ["$GITHUB_TAG" = "latest"]
+          if [ "$GITHUB_TAG" = "latest" ]
           then
             for image_tag in "$GITHUB_TAG" "$TIMESTAMP"; do
               tag_list+=("$registry/$docker_repo":"$image_tag")
             done
           else
-            for imate_tag in "$GITHUB_TAG"; do
+            for image_tag in "$GITHUB_TAG"; do
               tag_list+=("$registry/$docker_repo":"$image_tag")
             done
           fi
