@@ -46,6 +46,7 @@ def namespace_class_ad_from_topo(namespace, cache):
         class_ad_dict["Strategy"] = namespace["credential_generation"]["strategy"]
         class_ad_dict["Issuer"] = namespace["credential_generation"]["issuer"]
         class_ad_dict["MaxScopeDepth"] = namespace["credential_generation"]["max_scope_depth"]
+        class_ad_dict["BasePath"] = namespace["credential_generation"]["base_path"]
         if namespace["credential_generation"]["strategy"] == "Vault":
             class_ad_dict["VaultServer"] = namespace["credential_generation"]["vault_server"]
 

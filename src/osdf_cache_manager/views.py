@@ -79,7 +79,6 @@ def redirect_to_cache(path):
             #     X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["BasePath"])
         response.headers["X-OSDF-Token-Generation"] = X_OSDF_Token_Generation_hdr
 
-
         response.headers["X-OSDF-Namespace"] = "namespace={}, readhttps={}, use-token-on-read={}".format(namespace, namespace_ad["ReadHTTPS"], namespace_ad["UseTokenOnRead"])
 
         # Headers are all set up, send them back
