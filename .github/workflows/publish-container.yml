@@ -153,12 +153,12 @@ jobs:
         TIMESTAMP: ${{ needs.make-date-tag.outputs.dtag }}
       run: |
         if [ -z "${{ inputs.tag  }}" ]
-        then 
-          GITHUB_TAG=${GITHUB_REF##*/}
+        then
+          GITHUB_TAG="latest"
         else
           GITHUB_TAG=${{ inputs.tag }}
         fi
-        
+
         echo "Master SHA:"
         echo $(git rev-parse $GITHUB_REF_NAME)
         
@@ -170,9 +170,16 @@ jobs:
         docker_repo="pelican_platform/director"
         tag_list=()
         for registry in hub.opensciencegrid.org; do
-          for image_tag in "$GITHUB_TAG" "$GITHUB_TAG-$TIMESTAMP" "$(git rev-parse HEAD)"; do
-            tag_list+=("$registry/$docker_repo":"$image_tag")
-          done
+          if ["$GITHUB_TAG" = "latest"]
+          then
+            for image_tag in "$GITHUB_TAG" "$TIMESTAMP"; do
+              tag_list+=("$registry/$docker_repo":"$image_tag")
+            done
+          else
+            for imate_tag in "$GITHUB_TAG"; do
+              tag_list+=("$registry/$docker_repo":"$image_tag")
+            done
+          fi
         done
         # This causes the tag_list array to be comma-separated below,
         # which is required for build-push-action
