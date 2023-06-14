@@ -120,7 +120,8 @@ on:
   schedule:
     - cron: '0 7 * * *'
   push:
-    branches: [ $default-branch ]
+    #branches: [ $default-branch ]
+    branches: main
   repository_dispatch:
     types:
       - dispatch-build
