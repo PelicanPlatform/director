@@ -65,10 +65,6 @@ def redirect_to_cache(path):
         X_OSDF_Authorization_hdr = ""
         if "Issuer" in namespace_ad: # If there is an issuer, then other fields will also be present
             X_OSDF_Authorization_hdr = "issuer={}".format(namespace_ad["Issuer"])
-            if "BasePath" in namespace_ad:
-                X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["BasePath"])
-            else:
-                X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["Path"])
             if auth_token:
                 X_OSDF_Authorization_hdr += ", authorization={}".format(auth_token)
         response.headers["X-OSDF-Authorization"] = X_OSDF_Authorization_hdr
@@ -79,6 +75,8 @@ def redirect_to_cache(path):
             X_OSDF_Token_Generation_hdr = "issuer={}, max-scope-depth={}, strategy={}".format(namespace_ad["Issuer"], namespace_ad["MaxScopeDepth"], namespace_ad["Strategy"])
             if "VaultServer" in namespace_ad:
                 X_OSDF_Token_Generation_hdr += ", vault-server={}".format(namespace_ad["VaultServer"])
+            if "BasePath" in namespace_ad:
+                X_OSDF_Authorization_hdr += ", base-path={}".format(namespace_ad["BasePath"])
         response.headers["X-OSDF-Token-Generation"] = X_OSDF_Token_Generation_hdr
 
 
