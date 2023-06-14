@@ -154,7 +154,13 @@ jobs:
       run: |
         if [ -z "${{ inputs.tag  }}" ]
         then
-          GITHUB_TAG="latest"
+          echo ${GITHUB_REF##*/}
+          if [[ ${GITHUB_REF##*/} =~ v[0-9]+\.[0-9]+\.[0-9]+ ]]
+          then
+            GITHUB_TAG=${GITHUB_REF##*/}
+          else
+            GITHUB_TAG="latest"
+          fi
         else
           GITHUB_TAG=${{ inputs.tag }}
         fi
